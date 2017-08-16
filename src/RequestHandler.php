@@ -19,7 +19,7 @@ use Zan\Framework\Network\Server\Monitor\Worker;
 use Zan\Framework\Network\Server\Timer\Timer;
 use Zan\Framework\Utilities\DesignPattern\Context;
 use Zan\Framework\Utilities\Types\Time;
-use ZanPHP\HttpFoundation\Cookie;
+use ZanPHP\HttpFoundation\Cookie as CookieAlias;
 
 class RequestHandler
 {
@@ -108,7 +108,7 @@ class RequestHandler
         $this->context->set('action_name', $route['action_name']);
         $this->context->set('action_args', $route['action_args']);
 
-        $cookie = new Cookie($request, $swooleResponse);
+        $cookie = new CookieAlias($request, $swooleResponse);
         $this->context->set('cookie', $cookie);
 
         $this->context->set('request_time', Time::stamp());
