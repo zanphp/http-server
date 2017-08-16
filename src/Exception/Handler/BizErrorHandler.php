@@ -46,7 +46,7 @@ class BizErrorHandler implements ExceptionHandler
             $errorPage = $this->getTplErrorPage($tpl, $e, $context);
         } else {
             $errMsg = $e->getMessage();
-            $errorPagePath = Path::getRootPath() . '/vendor/zanphp/zan/src/Foundation/View/Pages/Error.php';
+            $errorPagePath = Path::getRootPath() . '/vendor/zanphp/http-view/src/Pages/Error.php';
             $errorPage = require $errorPagePath;
         }
         return $errorPage;
