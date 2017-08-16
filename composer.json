@@ -1,7 +1,9 @@
 {
   "name": "zanphp/http-server",
   "require": {
-    "php": ">=5.6"
+    "php": ">=5.6",
+    "zanphp/server-base": "dev-master",
+    "zanphp/http-view": "dev-master"
   },
   "autoload": {
     "psr-4": {
