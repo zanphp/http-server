@@ -29,7 +29,7 @@ class ForbiddenHandler implements ExceptionHandler
     {
         if ($e instanceof TokenException) {
             $errMsg = '禁止访问';
-            $errorPagePath = Path::getRootPath() . '/vendor/zanphp/zan/src/Foundation/View/Pages/Error.php';
+            $errorPagePath = Path::getRootPath() . '/vendor/zanphp/http-view/src/Pages/Error.php';
             $errorPage = require $errorPagePath;
 
             $request = (yield getContext('request'));
