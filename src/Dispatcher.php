@@ -29,7 +29,7 @@ class Dispatcher
         if(!is_callable([$controller, $action])) {
             throw new PageNotFoundException("action:{$action} is not callable in controller:" . get_class($controller));
         }
-        yield $controller->$action(...$args);
+        yield $controller->$action(...array_values($args));
     }
 
     private function getControllerClass($controllerName)
