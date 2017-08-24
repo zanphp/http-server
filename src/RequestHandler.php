@@ -20,6 +20,7 @@ use Zan\Framework\Network\Server\Timer\Timer;
 use Zan\Framework\Utilities\DesignPattern\Context;
 use Zan\Framework\Utilities\Types\Time;
 use ZanPHP\HttpFoundation\Cookie as CookieAlias;
+use ZanPHP\HttpFoundation\Response\Response;
 
 class RequestHandler
 {
@@ -123,6 +124,10 @@ class RequestHandler
     {
         Timer::clearAfterJob($this->getRequestTimeoutJobId());
         $response = $this->context->get('response');
+        if ($response === null) {
+            //伪造响应,避免terminate接口传入null导致fatal error
+            $response = new Response();
+        }
         $coroutine = $this->middleWareManager->executeTerminators($response);
         Task::execute($coroutine, $this->context);
     }
