@@ -13,8 +13,7 @@
     "zanphp/routing": "dev-master",
     "zanphp/database": "dev-master",
     "zanphp/service-store": "dev-master",
-    "zanphp/framework": "dev-master",
-    "zanphp/view": "dev-master"
+    "zanphp/framework": "dev-master"
   },
   "autoload": {
     "psr-4": {
