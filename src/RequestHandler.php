@@ -1,29 +1,30 @@
 <?php
 
-namespace Zan\Framework\Network\Http;
+namespace ZanPHP\HttpServer;
 
 use swoole_http_request as SwooleHttpRequest;
 use swoole_http_response as SwooleHttpResponse;
-use Zan\Framework\Foundation\Core\Config;
-use Zan\Framework\Foundation\Core\Debug;
-use Zan\Framework\Foundation\Coroutine\Signal;
-use Zan\Framework\Foundation\Coroutine\Task;
-use Zan\Framework\Network\Exception\ExcessConcurrencyException;
-use Zan\Framework\Network\Http\Request\Request;
-use Zan\Framework\Network\Http\Response\BaseResponse;
-use Zan\Framework\Network\Http\Response\InternalErrorResponse;
-use Zan\Framework\Network\Http\Response\JsonResponse;
-use Zan\Framework\Network\Http\Routing\Router;
-use Zan\Framework\Network\Server\Middleware\MiddlewareManager;
-use Zan\Framework\Network\Server\Monitor\Worker;
-use Zan\Framework\Network\Server\Timer\Timer;
-use Zan\Framework\Utilities\DesignPattern\Context;
-use Zan\Framework\Utilities\Types\Time;
+use ZanPHP\ServerBase\Middleware\MiddlewareManager;
+use ZanPHP\WorkerMonitor\WorkerMonitor;
+use ZanPHP\Contracts\Config\Repository;
+use ZanPHP\Coroutine\Context;
+use ZanPHP\Coroutine\Event;
+use ZanPHP\Coroutine\Signal;
+use ZanPHP\Coroutine\Task;
+use ZanPHP\Exception\Network\ExcessConcurrencyException;
 use ZanPHP\HttpFoundation\Cookie as CookieAlias;
+use ZanPHP\HttpFoundation\Request\Request;
+use ZanPHP\HttpFoundation\Response\BaseResponse;
+use ZanPHP\HttpFoundation\Response\InternalErrorResponse;
+use ZanPHP\HttpFoundation\Response\JsonResponse;
 use ZanPHP\HttpFoundation\Response\Response;
+use ZanPHP\Routing\Router;
+use ZanPHP\Support\Time;
+use ZanPHP\Timer\Timer;
 
 class RequestHandler
 {
+    /** @var null|Context  */
     private $context = null;
 
     /** @var MiddlewareManager */
@@ -31,6 +32,8 @@ class RequestHandler
 
     /** @var Task */
     private $task = null;
+
+    /** @var Event */
     private $event = null;
 
     /** @var Request */
@@ -55,7 +58,7 @@ class RequestHandler
             }
             $this->middleWareManager = new MiddlewareManager($request, $this->context);
 
-            $isAccept = Worker::instance()->reactionReceive();
+            $isAccept = WorkerMonitor::instance()->reactionReceive();
             //限流
             if (!$isAccept) {
                 throw new ExcessConcurrencyException('现在访问的人太多,请稍后再试..', 503);
@@ -81,7 +84,9 @@ class RequestHandler
             }
         }
 
-        if (Debug::get()) {
+        $repository = make(Repository::class);
+        $debug = $repository->get("debug");
+        if ($debug) {
             /** @noinspection PhpUndefinedVariableInspection */
             echo_exception($e);
         }
@@ -113,7 +118,8 @@ class RequestHandler
         $this->context->set('cookie', $cookie);
 
         $this->context->set('request_time', Time::stamp());
-        $request_timeout = Config::get('server.request_timeout');
+        $repository = make(Repository::class);
+        $request_timeout = $repository->get('server.request_timeout');
         $request_timeout = $request_timeout ? $request_timeout : self::DEFAULT_TIMEOUT;
         $this->context->set('request_timeout', $request_timeout);
 

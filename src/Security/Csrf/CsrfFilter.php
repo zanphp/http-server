@@ -1,17 +1,16 @@
 <?php
 
 
-namespace Zan\Framework\Network\Http\Security\Csrf;
+namespace ZanPHP\HttpServer\Security\Csrf;
 
-
-use Zan\Framework\Contract\Network\Request;
-use Zan\Framework\Contract\Network\RequestFilter;
-use Zan\Framework\Foundation\Container\Di;
-use Zan\Framework\Foundation\Core\Config;
-use Zan\Framework\Foundation\Exception\SystemException;
-use Zan\Framework\Network\Http\Response\Response;
-use Zan\Framework\Network\Http\Security\Csrf\Exception\TokenException;
-use Zan\Framework\Utilities\DesignPattern\Context;
+use ZanPHP\Contracts\Config\Repository;
+use ZanPHP\Contracts\Network\Request;
+use ZanPHP\Coroutine\Context;
+use ZanPHP\Exception\SystemException;
+use ZanPHP\Framework\Contract\Network\RequestFilter;
+use ZanPHP\HttpFoundation\Response\Response;
+use ZanPHP\HttpServer\Security\Csrf\Exception\TokenException;
+use ZanPHP\Support\Di;
 
 class CsrfFilter Implements RequestFilter
 {
@@ -112,7 +111,8 @@ class CsrfFilter Implements RequestFilter
     }
 
     private function isWhite(Request $request){
-        $whiteList = Config::get('secure.csrf.whitelist');
+        $repository = make(Repository::class);
+        $whiteList = $repository->get('secure.csrf.whitelist');
         $whiteList = $whiteList ? $whiteList : [];
 
         if(empty($whiteList)){

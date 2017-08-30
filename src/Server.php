@@ -1,29 +1,28 @@
 <?php
 
-namespace Zan\Framework\Network\Http;
+namespace ZanPHP\HttpServer;
 
-use Zan\Framework\Network\Http\ServerStart\InitializeProxyIps;
-use Zan\Framework\Network\Http\ServerStart\InitializeRouter;
-use Zan\Framework\Network\Http\ServerStart\InitializeUrlRule;
-use Zan\Framework\Network\Http\ServerStart\InitializeMiddleware;
-use Zan\Framework\Network\Http\ServerStart\InitializeExceptionHandlerChain;
-use Zan\Framework\Network\Server\Monitor\Worker;
-use Zan\Framework\Network\Server\ServerStart\InitLogConfig;
-use Zan\Framework\Network\Server\WorkerStart\InitializeConnectionPool;
-use Zan\Framework\Network\Server\WorkerStart\InitializeErrorHandler;
-use Zan\Framework\Network\Server\WorkerStart\InitializeHawkMonitor;
-use Zan\Framework\Network\Server\WorkerStart\InitializeServiceChain;
-use Zan\Framework\Network\Server\WorkerStart\InitializeWorkerMonitor;
-use Zan\Framework\Network\Server\WorkerStart\InitializeServerDiscovery;
-use Zan\Framework\Network\Http\ServerStart\InitializeUrlConfig;
-use Zan\Framework\Network\Http\ServerStart\InitializeQiniuConfig;
 use swoole_http_request as SwooleHttpRequest;
 use swoole_http_response as SwooleHttpResponse;
-use Zan\Framework\Network\Server\ServerBase;
-use Zan\Framework\Network\ServerManager\ServerStore;
-use Zan\Framework\Network\ServerManager\ServerDiscoveryInitiator;
-use Zan\Framework\Foundation\Core\Config;
-use Zan\Framework\Network\Http\ServerStart\InitializeSqlMap;
+use ZanPHP\Contracts\Config\Repository;
+use ZanPHP\HttpServer\ServerStart\InitializeExceptionHandlerChain;
+use ZanPHP\HttpServer\ServerStart\InitializeMiddleware;
+use ZanPHP\HttpServer\ServerStart\InitializeProxyIps;
+use ZanPHP\HttpServer\ServerStart\InitializeQiniuConfig;
+use ZanPHP\HttpServer\ServerStart\InitializeRouter;
+use ZanPHP\HttpServer\ServerStart\InitializeSqlMap;
+use ZanPHP\HttpServer\ServerStart\InitializeUrlConfig;
+use ZanPHP\HttpServer\ServerStart\InitializeUrlRule;
+use ZanPHP\ServerBase\ServerBase;
+use ZanPHP\ServerBase\ServerStart\InitLogConfig;
+use ZanPHP\ServerBase\WorkerStart\InitializeConnectionPool;
+use ZanPHP\ServerBase\WorkerStart\InitializeErrorHandler;
+use ZanPHP\ServerBase\WorkerStart\InitializeHawkMonitor;
+use ZanPHP\ServerBase\WorkerStart\InitializeServerDiscovery;
+use ZanPHP\ServerBase\WorkerStart\InitializeServiceChain;
+use ZanPHP\ServerBase\WorkerStart\InitializeWorkerMonitor;
+use ZanPHP\ServiceStore\ServiceStore;
+use ZanPHP\WorkerMonitor\WorkerMonitor;
 
 class Server extends ServerBase
 {
@@ -62,11 +61,12 @@ class Server extends ServerBase
 
     protected function init()
     {
-        $config = Config::get('registry');
+        $repository = make(Repository::class);
+        $config = $repository->get('registry');
         if (!isset($config['app_names']) || [] === $config['app_names']) {
             return;
         }
-        ServerStore::getInstance()->resetLockDiscovery();
+        ServiceStore::getInstance()->resetLockDiscovery();
     }
 
     public function onStart($swooleServer)
@@ -93,7 +93,7 @@ class Server extends ServerBase
         // ServerDiscoveryInitiator::getInstance()->unlockDiscovery($workerId);
         sys_echo("worker *$workerId stopping .....");
 
-        $num = Worker::getInstance()->reactionNum ?: 0;
+        $num = WorkerMonitor::getInstance()->reactionNum ?: 0;
         sys_echo("worker *$workerId still has $num requests in progress...");
     }
 
@@ -103,7 +103,7 @@ class Server extends ServerBase
 
         sys_echo("worker error happening [workerId=$workerId, workerPid=$workerPid, exitCode=$exitCode, signalNo=$sigNo]...");
 
-        $num = Worker::getInstance()->reactionNum ?: 0;
+        $num = WorkerMonitor::getInstance()->reactionNum ?: 0;
         sys_echo("worker *$workerId still has $num requests in progress...");
     }
 

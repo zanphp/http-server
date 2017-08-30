@@ -1,15 +1,13 @@
 <?php
 
+namespace ZanPHP\HttpServer\Security\Csrf;
 
-namespace Zan\Framework\Network\Http\Security\Csrf;
-
-
-use Zan\Framework\Foundation\Container\Di;
-use Zan\Framework\Foundation\Core\Config;
-use Zan\Framework\Foundation\Exception\ZanException;
-use Zan\Framework\Network\Http\Security\Csrf\Factory\SimpleTokenFactory;
-use Zan\Framework\Network\Http\Security\Csrf\Factory\TokenFactoryInterface;
-use Zan\Framework\Utilities\Encrpt\Uuid;
+use ZanPHP\Contracts\Config\Repository;
+use ZanPHP\Exception\ZanException;
+use ZanPHP\HttpServer\Security\Csrf\Factory\SimpleTokenFactory;
+use ZanPHP\HttpServer\Security\Csrf\Factory\TokenFactoryInterface;
+use ZanPHP\Support\Di;
+use ZanPHP\Utilities\Encrpt\Uuid;
 
 class CsrfTokenManager implements CsrfTokenManagerInterface
 {
@@ -28,7 +26,8 @@ class CsrfTokenManager implements CsrfTokenManagerInterface
     public function __construct(TokenFactoryInterface $factory = null)
     {
         $this->factory = $factory ?: Di::make(SimpleTokenFactory::class);
-        $this->csrfConfig = Config::get('csrf', []);
+        $repository = make(Repository::class);
+        $this->csrfConfig = $repository->get('csrf', []);
     }
 
     /**

@@ -1,10 +1,8 @@
 <?php
 
+namespace ZanPHP\HttpServer\Security\Csrf\Exception;
 
-namespace Zan\Framework\Network\Http\Security\Csrf\Exception;
-
-
-use Zan\Framework\Foundation\Exception\ZanException;
+use ZanPHP\Exception\ZanException;
 
 class TokenException extends ZanException
 {

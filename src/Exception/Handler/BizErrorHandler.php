@@ -1,16 +1,15 @@
 <?php
 
-namespace Zan\Framework\Network\Http\Exception\Handler;
+namespace ZanPHP\HttpServer\Exception\Handler;
 
-use Zan\Framework\Contract\Foundation\ExceptionHandler;
-use Zan\Framework\Foundation\Core\Config;
-use Zan\Framework\Foundation\Core\Path;
-use Zan\Framework\Foundation\Exception\BusinessException;
-use Zan\Framework\Foundation\View\JsVar;
-use Zan\Framework\Foundation\View\View;
-use Zan\Framework\Network\Http\Response\JsonResponse;
-use Zan\Framework\Network\Http\Response\Response;
-use Zan\Framework\Utilities\DesignPattern\Context;
+use ZanPHP\Contracts\Config\Repository;
+use ZanPHP\Contracts\Foundation\ExceptionHandler;
+use ZanPHP\Coroutine\Context;
+use ZanPHP\Exception\BusinessException;
+use ZanPHP\HttpFoundation\Response\JsonResponse;
+use ZanPHP\HttpFoundation\Response\Response;
+use ZanPHP\HttpView\JsVar;
+use ZanPHP\HttpView\View;
 
 class BizErrorHandler implements ExceptionHandler
 {
@@ -46,7 +45,7 @@ class BizErrorHandler implements ExceptionHandler
             $errorPage = $this->getTplErrorPage($tpl, $e, $context);
         } else {
             $errMsg = $e->getMessage();
-            $errorPagePath = Path::getRootPath() . '/vendor/zanphp/http-view/src/Pages/Error.php';
+            $errorPagePath = getenv("path.root") . '/vendor/zanphp/http-view/src/Pages/Error.php';
             $errorPage = require $errorPagePath;
         }
         return $errorPage;
@@ -70,7 +69,8 @@ class BizErrorHandler implements ExceptionHandler
 
     private function parseConfig($exceptionClassName)
     {
-        $configMap = Config::get('biz_exception_error_page');
+        $repository = make(Repository::class);
+        $configMap = $repository->get('biz_exception_error_page');
         if (!is_array($configMap) || empty($configMap)) {
             return [];
         }

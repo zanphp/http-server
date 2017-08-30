@@ -1,8 +1,9 @@
 <?php
-namespace Zan\Framework\Network\Http\ServerStart;
 
-use Zan\Framework\Foundation\Core\Config;
-use Zan\Framework\Network\Http\Request\BaseRequest;
+namespace ZanPHP\HttpServer\ServerStart;
+
+use ZanPHP\Contracts\Config\Repository;
+use ZanPHP\HttpFoundation\Request\BaseRequest;
 
 class InitializeProxyIps
 {
@@ -11,7 +12,8 @@ class InitializeProxyIps
      */
     public function bootstrap($server)
     {
-        $proxy = Config::get("server.proxy");
+        $repository = make(Repository::class);
+        $proxy = $repository->get("server.proxy");
         if (is_array($proxy)) {
             BaseRequest::setTrustedProxies($proxy);
         }

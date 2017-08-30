@@ -1,12 +1,12 @@
 <?php
 
-namespace Zan\Framework\Network\Http;
+namespace ZanPHP\HttpServer;
 
-use Zan\Framework\Foundation\Application;
-use Zan\Framework\Foundation\Core\Config;
-use Zan\Framework\Contract\Network\Request;
-use Zan\Framework\Utilities\DesignPattern\Context;
-use Zan\Framework\Network\Http\Exception\PageNotFoundException; 
+use ZanPHP\Contracts\Config\Repository;
+use ZanPHP\Contracts\Foundation\Application;
+use ZanPHP\Contracts\Network\Request;
+use ZanPHP\Coroutine\Context;
+use ZanPHP\HttpFoundation\Exception\PageNotFoundException;
 
 class Dispatcher
 {
@@ -36,8 +36,9 @@ class Dispatcher
     {
         $parts = array_filter(explode('/', $controllerName));
         $controllerName = join('\\', array_map('ucfirst', $parts));
-        $app = Application::getInstance();
-        $controllerRootNamespace = Config::get('controller_mapping.root_namespace', $app->getNamespace());
+        $app = make(Application::class);
+        $repository = make(Repository::class);
+        $controllerRootNamespace = $repository->get('controller_mapping.root_namespace', $app->getNamespace());
         return $controllerRootNamespace . 'Controller\\' .  $controllerName . 'Controller';
     }
 }

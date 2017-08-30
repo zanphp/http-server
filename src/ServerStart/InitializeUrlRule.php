@@ -1,9 +1,8 @@
 <?php
 
-namespace Zan\Framework\Network\Http\ServerStart;
+namespace ZanPHP\HttpServer\ServerStart;
 
-use Zan\Framework\Network\Http\Routing\UrlRuleInitiator;
-use Zan\Framework\Foundation\Application;
+use ZanPHP\Routing\UrlRuleInitiator;
 
 class InitializeUrlRule
 {

@@ -3,11 +3,22 @@
   "require": {
     "php": ">=5.6",
     "zanphp/server-base": "dev-master",
-    "zanphp/http-view": "dev-master"
+    "zanphp/http-view": "dev-master",
+    "zanphp/coroutine": "dev-master",
+    "zanphp/container": "dev-master",
+    "zanphp/nosql": "dev-master",
+    "zanphp/utilities": "dev-master",
+    "zanphp/http-foundation": "dev-master",
+    "zanphp/exception": "dev-master",
+    "zanphp/routing": "dev-master",
+    "zanphp/database": "dev-master",
+    "zanphp/service-store": "dev-master",
+    "zanphp/framework": "dev-master",
+    "zanphp/worker-monitor": "dev-master"
   },
   "autoload": {
     "psr-4": {
-      "Zan\\Framework\\Network\\Http\\": "src/"
+      "ZanPHP\\HttpServer\\": "src/"
     }
   },
   "extra": {

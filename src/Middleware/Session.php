@@ -1,13 +1,12 @@
 <?php
 
-namespace Zan\Framework\Network\Http\Middleware;
+namespace ZanPHP\HttpServer\Middleware;
 
-use Zan\Framework\Foundation\Core\Config;
-use Zan\Framework\Foundation\Exception\System\InvalidArgumentException;
-use Zan\Framework\Network\Http\Request\Request;
-use Zan\Framework\Store\Facade\Cache;
-use Zan\Framework\Utilities\Encrpt\Uuid;
-
+use InvalidArgumentException;
+use ZanPHP\Contracts\Config\Repository;
+use ZanPHP\HttpFoundation\Request\Request;
+use ZanPHP\NoSql\Facade\Cache;
+use ZanPHP\Utilities\Encrpt\Uuid;
 
 class Session
 {
@@ -23,7 +22,8 @@ class Session
 
     public function __construct(Request $request, $cookie)
     {
-        $this->config = Config::get(self::CONFIG_KEY);
+        $repository = make(Repository::class);
+        $this->config = $repository->get(self::CONFIG_KEY);
 
         $this->request = $request;
         $this->cookie = $cookie;

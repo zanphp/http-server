@@ -1,10 +1,10 @@
 <?php
 
-namespace Zan\Framework\Network\Http\Middleware;
+namespace ZanPHP\HttpServer\Middleware;
 
-use Zan\Framework\Contract\Network\Request;
-use Zan\Framework\Contract\Network\RequestFilter;
-use Zan\Framework\Utilities\DesignPattern\Context;
+use ZanPHP\Contracts\Network\Request;
+use ZanPHP\Coroutine\Context;
+use ZanPHP\Framework\Contract\Network\RequestFilter;
 
 class SessionFilter implements RequestFilter
 {

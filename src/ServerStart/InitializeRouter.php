@@ -1,9 +1,9 @@
 <?php
 
-namespace Zan\Framework\Network\Http\ServerStart;
+namespace ZanPHP\HttpServer\ServerStart;
 
-use Zan\Framework\Network\Http\Routing\RouteInitiator;
-use Zan\Framework\Foundation\Core\Config;
+use ZanPHP\Contracts\Config\Repository;
+use ZanPHP\Routing\RouteInitiator;
 
 class InitializeRouter
 {
@@ -12,6 +12,7 @@ class InitializeRouter
      */
     public function bootstrap($server)
     {
-        RouteInitiator::getInstance()->init(Config::get('route'));
+        $repository = make(Repository::class);
+        RouteInitiator::getInstance()->init($repository->get('route'));
     }
 }
