@@ -1,8 +1,10 @@
 <?php
 
-namespace Zan\Framework\Network\Http\ServerStart;
+namespace ZanPHP\HttpServer\ServerStart;
 
-use Zan\Framework\Network\Http\RequestExceptionHandlerChain;
+use ZanPHP\Container\Container;
+use ZanPHP\HttpServer\RequestExceptionHandlerChain;
+use ZanPHP\Contracts\Server\RequestExceptionHandlerChain as RequestExceptionHandlerChainContract;
 
 class InitializeExceptionHandlerChain
 {
@@ -12,5 +14,7 @@ class InitializeExceptionHandlerChain
     public function bootstrap($server)
     {
         RequestExceptionHandlerChain::getInstance()->init();
+        $container = Container::getInstance();
+        $container->instance(RequestExceptionHandlerChainContract::class, RequestExceptionHandlerChain::getInstance());
     }
 }

@@ -1,7 +1,6 @@
 <?php
 
-
-namespace Zan\Framework\Network\Http\Security\Csrf;
+namespace ZanPHP\HttpServer\Security\Csrf;
 
 
 class CsrfToken

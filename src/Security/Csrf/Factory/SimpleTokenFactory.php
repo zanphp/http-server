@@ -1,12 +1,11 @@
 <?php
 
 
-namespace Zan\Framework\Network\Http\Security\Csrf\Factory;
+namespace ZanPHP\HttpServer\Security\Csrf\Factory;
 
-
-use Zan\Framework\Foundation\Core\Config;
-use Zan\Framework\Network\Http\Security\Csrf\CsrfToken;
-use Zan\Framework\Utilities\Encrpt\SimpleEncrypt;
+use ZanPHP\Contracts\Config\Repository;
+use ZanPHP\HttpServer\Security\Csrf\CsrfToken;
+use ZanPHP\Utilities\Encrpt\SimpleEncrypt;
 
 class SimpleTokenFactory implements TokenFactoryInterface
 {
@@ -15,7 +14,8 @@ class SimpleTokenFactory implements TokenFactoryInterface
 
     public function __construct()
     {
-        $this->key = Config::get('csrf._default.key', NULL);
+        $repository = make(Repository::class);
+        $this->key = $repository->get('csrf._default.key', NULL);
     }
 
     public function buildToken($id, $tokenTime)

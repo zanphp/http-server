@@ -1,18 +1,19 @@
 <?php
 
-namespace Zan\Framework\Network\Http;
+namespace ZanPHP\HttpServer;
 
-use Zan\Framework\Foundation\Exception\ExceptionHandlerChain;
-use Zan\Framework\Network\Http\Exception\Handler\BizErrorHandler;
-use Zan\Framework\Network\Http\Exception\Handler\ForbiddenHandler;
-use Zan\Framework\Network\Http\Exception\Handler\InternalErrorHandler;
-use Zan\Framework\Network\Http\Exception\Handler\InvalidRouteHandler;
-use Zan\Framework\Network\Http\Exception\Handler\PageNotFoundHandler;
-use Zan\Framework\Network\Http\Exception\Handler\RedirectHandler;
-use Zan\Framework\Network\Http\Exception\Handler\ServerUnavailableHandler;
-use Zan\Framework\Utilities\DesignPattern\Singleton;
+use ZanPHP\Framework\Foundation\Exception\ExceptionHandlerChain;
+use ZanPHP\Contracts\Server\RequestExceptionHandlerChain as RequestExceptionHandlerChainContract;
+use ZanPHP\HttpFoundation\Exception\Handler\InternalErrorHandler;
+use ZanPHP\HttpFoundation\Exception\Handler\InvalidRouteHandler;
+use ZanPHP\HttpFoundation\Exception\Handler\PageNotFoundHandler;
+use ZanPHP\HttpFoundation\Exception\Handler\RedirectHandler;
+use ZanPHP\HttpFoundation\Exception\Handler\ServerUnavailableHandler;
+use ZanPHP\HttpServer\Exception\Handler\BizErrorHandler;
+use ZanPHP\HttpServer\Exception\Handler\ForbiddenHandler;
+use ZanPHP\Support\Singleton;
 
-class RequestExceptionHandlerChain extends ExceptionHandlerChain
+class RequestExceptionHandlerChain extends ExceptionHandlerChain implements RequestExceptionHandlerChainContract
 {
     use Singleton;
 

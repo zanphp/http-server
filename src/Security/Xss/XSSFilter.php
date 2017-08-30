@@ -1,12 +1,10 @@
 <?php
 
+namespace ZanPHP\HttpServer\Security\Xss;
 
-namespace Zan\Framework\Network\Http\Security\Xss;
-
-
-use Zan\Framework\Contract\Network\Request;
-use Zan\Framework\Contract\Network\RequestFilter;
-use Zan\Framework\Utilities\DesignPattern\Context;
+use ZanPHP\Contracts\Network\Request;
+use ZanPHP\Coroutine\Context;
+use ZanPHP\Framework\Contract\Network\RequestFilter;
 
 class XSSFilter Implements RequestFilter
 {

@@ -1,14 +1,11 @@
 <?php
 
+namespace ZanPHP\HttpServer\Exception\Handler;
 
-namespace Zan\Framework\Network\Http\Exception\Handler;
-
-
-use Zan\Framework\Contract\Foundation\ExceptionHandler;
-use Zan\Framework\Foundation\Core\Path;
-use Zan\Framework\Network\Http\Response\JsonResponse;
-use Zan\Framework\Network\Http\Response\Response;
-use Zan\Framework\Network\Http\Security\Csrf\Exception\TokenException;
+use ZanPHP\Contracts\Foundation\ExceptionHandler;
+use ZanPHP\HttpFoundation\Response\JsonResponse;
+use ZanPHP\HttpFoundation\Response\Response;
+use ZanPHP\HttpServer\Security\Csrf\Exception\TokenException;
 
 class ForbiddenHandler implements ExceptionHandler
 {
@@ -29,7 +26,7 @@ class ForbiddenHandler implements ExceptionHandler
     {
         if ($e instanceof TokenException) {
             $errMsg = '禁止访问';
-            $errorPagePath = Path::getRootPath() . '/vendor/zanphp/http-view/src/Pages/Error.php';
+            $errorPagePath = getenv("path.root") . '/vendor/zanphp/http-view/src/Pages/Error.php';
             $errorPage = require $errorPagePath;
 
             $request = (yield getContext('request'));

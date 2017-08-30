@@ -1,17 +1,17 @@
 <?php
 
-namespace Zan\Framework\Network\Http;
+namespace ZanPHP\HttpServer;
 
 use swoole_http_response as SwooleHttpResponse;
-use Zan\Framework\Contract\Network\Request;
-use Zan\Framework\Foundation\Container\Di;
-use Zan\Framework\Foundation\Core\Debug;
-use Zan\Framework\Foundation\Coroutine\Task;
-use Zan\Framework\Network\Http\Response\BaseResponse;
-use Zan\Framework\Network\Http\Response\InternalErrorResponse;
-use Zan\Framework\Network\Http\Response\ResponseTrait;
-use Zan\Framework\Network\Server\Middleware\MiddlewareManager;
-use Zan\Framework\Utilities\DesignPattern\Context;
+use ZanPHP\Contracts\Config\Repository;
+use ZanPHP\Contracts\Http\ResponseTrait;
+use ZanPHP\Contracts\Network\Request;
+use ZanPHP\Coroutine\Context;
+use ZanPHP\Coroutine\Task;
+use ZanPHP\HttpFoundation\Response\BaseResponse;
+use ZanPHP\HttpFoundation\Response\InternalErrorResponse;
+use ZanPHP\ServerBase\Middleware\MiddlewareManager;
+use ZanPHP\Support\Di;
 
 class RequestTask
 {
@@ -52,7 +52,8 @@ class RequestTask
             }
         }
 
-        if (Debug::get()) {
+        $repository = make(Repository::class);
+        if ($repository->get("debug")) {
             /** @noinspection PhpUndefinedVariableInspection */
             echo_exception($e);
         }

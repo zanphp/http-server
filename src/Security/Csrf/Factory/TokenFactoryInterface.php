@@ -1,10 +1,8 @@
 <?php
 
+namespace ZanPHP\HttpServer\Security\Csrf\Factory;
 
-namespace Zan\Framework\Network\Http\Security\Csrf\Factory;
-
-
-use Zan\Framework\Network\Http\Security\Csrf\CsrfToken;
+use ZanPHP\HttpServer\Security\Csrf\CsrfToken;
 
 interface TokenFactoryInterface
 {
