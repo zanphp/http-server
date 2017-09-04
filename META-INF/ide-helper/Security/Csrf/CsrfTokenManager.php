@@ -1,32 +1,40 @@
 <?php
 
-
 namespace Zan\Framework\Network\Http\Security\Csrf;
+
+use ZanPHP\HttpServer\Security\Csrf\Factory\TokenFactoryInterface;
 
 class CsrfTokenManager implements CsrfTokenManagerInterface
 {
+    private $CsrfTokenManager;
+
+    public function __construct(TokenFactoryInterface $factory = null)
+    {
+        $this->CsrfTokenManager = new \ZanPHP\HttpServer\Security\Csrf\CsrfTokenManager($factory);
+    }
+
     public function createToken()
     {
-       \ZanPHP\HttpServer\Security\Csrf\CsrfTokenManager::createToken();
+        $this->CsrfTokenManager->createToken();
     }
 
     public function refreshToken(CsrfToken $token)
     {
-        \ZanPHP\HttpServer\Security\Csrf\CsrfTokenManager::refreshToken($token);
+        $this->CsrfTokenManager->refreshToken($token);
     }
 
     public function parseToken($tokenRaw)
     {
-        \ZanPHP\HttpServer\Security\Csrf\CsrfTokenManager::parseToken($tokenRaw);
+        $this->CsrfTokenManager->parseToken($tokenRaw);
     }
 
     public function isTokenValid(array $modules, CsrfToken $token = null)
     {
-        \ZanPHP\HttpServer\Security\Csrf\CsrfTokenManager::isTokenValid($modules, $token);
+        $this->CsrfTokenManager->isTokenValid($modules, $token);
     }
 
     public function getTTL(array $modules)
     {
-        \ZanPHP\HttpServer\Security\Csrf\CsrfTokenManager::getTTL($modules);
+        $this->CsrfTokenManager->getTTL($modules);
     }
 }

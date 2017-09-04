@@ -7,8 +7,15 @@ use ZanPHP\Coroutine\Context;
 
 class Dispatcher
 {
+    private $Dispatcher;
+
+    public function __construct()
+    {
+        $this->Dispatcher = new \ZanPHP\HttpServer\Dispatcher();
+    }
+
     public function dispatch(Request $request, Context $context)
     {
-        \ZanPHP\HttpServer\Dispatcher::dispatch($request,$context);
+        $this->Dispatcher->dispatch($request,$context);
     }
 }

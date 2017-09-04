@@ -10,8 +10,15 @@ use ZanPHP\Framework\Contract\Network\RequestFilter;
 
 class CsrfFilter Implements RequestFilter
 {
+    private $CsrfFilter;
+
+    public function __construct()
+    {
+        $this->CsrfFilter = new \ZanPHP\HttpServer\Security\Csrf\CsrfFilter();
+    }
+
     public function doFilter(Request $request, Context $context)
     {
-        \ZanPHP\HttpServer\Security\Csrf\CsrfFilter::doFilter($request,$context);
+        $this->CsrfFilter->doFilter($request,$context);
     }
 }

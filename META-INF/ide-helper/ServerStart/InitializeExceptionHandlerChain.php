@@ -5,11 +5,15 @@ namespace Zan\Framework\Network\Http\ServerStart;
 
 class InitializeExceptionHandlerChain
 {
-    /**
-     * @param \Zan\Framework\Network\Http\Server $server
-     */
+    private $InitializeExceptionHandlerChain;
+
+    public function __construct()
+    {
+        $this->InitializeExceptionHandlerChain = new \ZanPHP\HttpServer\ServerStart\InitializeExceptionHandlerChain();
+    }
+
     public function bootstrap($server)
     {
-        \ZanPHP\HttpServer\ServerStart\InitializeExceptionHandlerChain::bootstrap($server);
+        $this->InitializeExceptionHandlerChain->bootstrap($server);
     }
 }

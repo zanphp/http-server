@@ -9,43 +9,51 @@ use ZanPHP\ServerBase\ServerBase;
 
 class Server extends ServerBase
 {
+    private $Server;
+
+    public function __construct()
+    {
+        parent::__construct('', array());
+        $this->Server = new \ZanPHP\HttpServer\Server();
+    }
+
     public function setSwooleEvent()
     {
-        \ZanPHP\HttpServer\Server::setSwooleEvent();
+        $this->Server->setSwooleEvent();
     }
 
     protected function init()
     {
-        \ZanPHP\HttpServer\Server::init();
+        $this->Server->init();
     }
 
     public function onStart($swooleServer)
     {
-        \ZanPHP\HttpServer\Server::onStart($swooleServer);
+        $this->Server->onStart($swooleServer);
     }
 
     public function onShutdown($swooleServer)
     {
-        \ZanPHP\HttpServer\Server::onShutdown($swooleServer);
+        $this->Server->onShutdown($swooleServer);
     }
 
     public function onWorkerStart($swooleServer, $workerId)
     {
-        \ZanPHP\HttpServer\Server::onWorkerStart($swooleServer, $workerId);
+        $this->Server->onWorkerStart($swooleServer, $workerId);
     }
 
     public function onWorkerStop($swooleServer, $workerId)
     {
-        \ZanPHP\HttpServer\Server::onWorkerStop($swooleServer, $workerId);
+        $this->Server->onWorkerStop($swooleServer, $workerId);
     }
 
     public function onWorkerError($swooleServer, $workerId, $workerPid, $exitCode, $sigNo)
     {
-        \ZanPHP\HttpServer\Server::onWorkerError($swooleServer, $workerId, $workerPid, $exitCode, $sigNo);
+        $this->Server->onWorkerError($swooleServer, $workerId, $workerPid, $exitCode, $sigNo);
     }
 
     public function onRequest(SwooleHttpRequest $httpRequest, SwooleHttpResponse $httpResponse)
     {
-        \ZanPHP\HttpServer\Server::onRequest($httpRequest, $httpResponse);
+        $this->Server->onRequest($httpRequest, $httpResponse);
     }
 }

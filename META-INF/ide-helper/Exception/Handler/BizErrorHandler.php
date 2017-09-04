@@ -6,8 +6,15 @@ use ZanPHP\Contracts\Foundation\ExceptionHandler;
 
 class BizErrorHandler implements ExceptionHandler
 {
+    private $BizErrorHandler;
+
+    public function __construct()
+    {
+        $this->BizErrorHandler = new \ZanPHP\HttpServer\Exception\Handler\BizErrorHandler();
+    }
+
     public function handle(\Exception $e)
     {
-        \ZanPHP\HttpServer\Exception\Handler\BizErrorHandler::handle($e);
+        $this->BizErrorHandler->handle($e);
     }
 }

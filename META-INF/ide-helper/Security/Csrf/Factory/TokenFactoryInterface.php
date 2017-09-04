@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Zan\Framework\Network\Http\Security\Csrf\Factory;
 
 use ZanPHP\HttpServer\Security\Csrf\CsrfToken;

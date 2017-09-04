@@ -10,8 +10,15 @@ use ZanPHP\Framework\Contract\Network\RequestTerminator;
 
 class SessionTerminator implements RequestTerminator
 {
+    private $SessionTerminator;
+
+    public function __construct()
+    {
+        $this->SessionTerminator = new \ZanPHP\HttpServer\Middleware\SessionTerminator();
+    }
+
     public function terminate(Request $request, Response $response, Context $context)
     {
-        \ZanPHP\HttpServer\Middleware\SessionTerminator::terminate($request, $response,$context);
+        $this->SessionTerminator->terminate($request, $response,$context);
     }
 }

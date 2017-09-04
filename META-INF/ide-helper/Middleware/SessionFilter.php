@@ -8,8 +8,15 @@ use ZanPHP\Framework\Contract\Network\RequestFilter;
 
 class SessionFilter implements RequestFilter
 {
+    private $SessionFilter;
+
+    public function __construct()
+    {
+        $this->SessionFilter = new \ZanPHP\HttpServer\Middleware\SessionFilter();
+    }
+
     public function doFilter(Request $request, Context $context)
     {
-        \ZanPHP\HttpServer\Middleware\SessionFilter::doFilter($request, $context);
+        $this->SessionFilter->doFilter($request, $context);
     }
 }

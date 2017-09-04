@@ -7,8 +7,16 @@ use ZanPHP\Contracts\Server\RequestExceptionHandlerChain as RequestExceptionHand
 
 class RequestExceptionHandlerChain extends ExceptionHandlerChain implements RequestExceptionHandlerChainContract
 {
+    private $RequestExceptionHandlerChain;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->RequestExceptionHandlerChain = new \ZanPHP\HttpServer\RequestExceptionHandlerChain();
+    }
+
     public function init()
     {
-        \ZanPHP\HttpServer\RequestExceptionHandlerChain::init();
+        $this->RequestExceptionHandlerChain->init();
     }
 }

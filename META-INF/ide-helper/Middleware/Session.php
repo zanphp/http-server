@@ -2,40 +2,49 @@
 
 namespace Zan\Framework\Network\Http\Middleware;
 
+use ZanPHP\HttpFoundation\Request\Request;
+
 class Session
 {
+    private $Session;
+
+    public function __construct(Request $request, $cookie)
+    {
+        $this->Session = new \ZanPHP\HttpServer\Middleware\Session($request, $cookie);
+    }
+
     public function init()
     {
-        \ZanPHP\HttpServer\Middleware\Session::init();
+        $this->Session->init();
     }
 
     public function set($key, $value)
     {
-        \ZanPHP\HttpServer\Middleware\Session::set($key, $value);
+        $this->Session->set($key, $value);
     }
 
     public function get($key)
     {
-        \ZanPHP\HttpServer\Middleware\Session::get($key);
+        $this->Session->get($key);
     }
 
     public function delete($key)
     {
-        \ZanPHP\HttpServer\Middleware\Session::delete($key);
+        $this->Session->delete($key);
     }
 
     public function destroy()
     {
-        \ZanPHP\HttpServer\Middleware\Session::destroy();
+        $this->Session->destroy();
     }
 
     public function getSessionId()
     {
-        \ZanPHP\HttpServer\Middleware\Session::getSessionId();
+        $this->Session->getSessionId();
     }
 
     public function writeBack() {
-        \ZanPHP\HttpServer\Middleware\Session::writeBack();
+        $this->Session->writeBack();
     }
 
     public static function sessionEncode( array $data ) {
