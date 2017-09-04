@@ -14,7 +14,7 @@ class Server extends ServerBase
     public function __construct()
     {
         parent::__construct('', array());
-        $this->Server = new \ZanPHP\HttpServer\Server();
+        $this->Server = new \ZanPHP\HttpServer\Server('', array());
     }
 
     public function setSwooleEvent()
