@@ -4,6 +4,7 @@ namespace ZanPHP\HttpServer\Middleware;
 
 use InvalidArgumentException;
 use ZanPHP\Contracts\Config\Repository;
+use ZanPHP\Exception\ZanException;
 use ZanPHP\HttpClient\HttpClient;
 use ZanPHP\HttpFoundation\Request\Request;
 use ZanPHP\NoSql\Facade\Cache;
@@ -62,18 +63,19 @@ class Session
             $repository = make(Repository::class);
             $host = $repository->get("zan_session.host");
             $port = $repository->get("zan_session.port");
-            $client = new HttpClient($host, $port);
-            $client->setHeader([
-                "Content-Type" => "application/json"
-            ]);
             $retries = 3;
             for ($i = 0; $i < $retries; $i++) {
                 try {
-                    $response = (yield $client->post("/session/session/create", [], 300));
-                    $response = json_decode($response, true);
+                    $client = new HttpClient($host, $port);
+                    $client->setHeader([
+                        "Content-Type" => "application/json"
+                    ]);
+                    $response = (yield $client->post("/session/session/create", null, 300));
+                    $response = json_decode($response->getBody(), true);
                     if (isset($response['data']['code']) && $response['data']['code'] === 200 &&
                         isset($response['data']['data']['sessionId'])) {
                         $uuid = $response['data']['data']['sessionId'];
+                        break;
                     }
                 } catch (\Throwable $t) {
                     echo_exception($t);
@@ -90,7 +92,11 @@ class Session
         } else {
             $uuid = Uuid::get();
         }
-        return $uuid;
+
+        if (!isset($uuid)) {
+            throw new ZanException("session get uuid failed");
+        }
+        yield $uuid;
     }
 
     public function set($key, $value)
@@ -131,10 +137,14 @@ class Session
         yield $this->session_id;
     }
 
-    public function writeHttpInterface()
+    private function writeHttpInterface()
     {
         if (isset($this->config['enable_http']) && $this->config['enable_http'] === true) {
-            $percent = intval($this->config['percent']);
+            if (isset($this->config['percent'])) {
+                $percent = intval($this->config['percent']);
+            } else {
+                $percent = 0;
+            }
             if (rand(1, 100) <= $percent) {
                 $repository = make(Repository::class);
                 $host = $repository->get("zan_session.host");
@@ -147,20 +157,20 @@ class Session
                     'data' => $this->session_changed_map,
                     'session_id' => $this->session_id
                 ]);
-                yield $client->post("/session/session/setMultiUpdateObj", $params);
+                try {
+                    yield $client->post("/session/session/setMultiUpdateObj", $params, 1000);
+                } catch (\Throwable $t) {
+                    echo_exception($t);
+                } catch (\Exception $e) {
+                    echo_exception($e);
+                }
             }
         }
     }
 
     public function writeBack() {
         if ($this->isChanged) {
-            try {
-                yield $this->writeHttpInterface();
-            } catch (\Throwable $t) {
-                echo_exception($t);
-            } catch (\Exception $e) {
-                echo_exception($e);
-            }
+            yield $this->writeHttpInterface();
             yield Cache::set($this->config['store_key'], [$this->session_id], $this->sessionEncode($this->session_map));
         }
     }
