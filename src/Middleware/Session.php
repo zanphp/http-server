@@ -155,7 +155,7 @@ class Session
                 ]);
                 $params = json_encode([
                     'data' => $this->session_changed_map,
-                    'session_id' => $this->session_id
+                    'sessionId' => $this->session_id
                 ]);
                 try {
                     yield $client->post("/session/session/setMultiUpdateObj", $params, 1000);
