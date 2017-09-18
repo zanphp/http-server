@@ -59,8 +59,9 @@ class Session
 
     private function getUuid()
     {
-        if (isset($this->config['enable_http']) && $this->config['enable_http'] === true) {
-            $repository = make(Repository::class);
+        $repository = make(Repository::class);
+        $enableHttp = $repository->get("zan_session.enable_http");
+        if ($enableHttp === true) {
             $host = $repository->get("zan_session.host");
             $port = $repository->get("zan_session.port");
             $retries = 3;
@@ -139,31 +140,25 @@ class Session
 
     private function writeHttpInterface()
     {
-        if (isset($this->config['enable_http']) && $this->config['enable_http'] === true) {
-            if (isset($this->config['percent'])) {
-                $percent = intval($this->config['percent']);
-            } else {
-                $percent = 0;
-            }
-            if (rand(1, 100) <= $percent) {
-                $repository = make(Repository::class);
-                $host = $repository->get("zan_session.host");
-                $port = $repository->get("zan_session.port");
-                $client = new HttpClient($host, $port);
-                $client->setHeader([
-                    "Content-Type" => "application/json"
-                ]);
-                $params = json_encode([
-                    'data' => $this->session_changed_map,
-                    'sessionId' => $this->session_id
-                ]);
-                try {
-                    yield $client->post("/session/session/setMultiUpdateObj", $params, 1000);
-                } catch (\Throwable $t) {
-                    echo_exception($t);
-                } catch (\Exception $e) {
-                    echo_exception($e);
-                }
+        $repository = make(Repository::class);
+        $enableHttp = $repository->get("zan_session.enable_http");
+        if ($enableHttp === true) {
+            $host = $repository->get("zan_session.host");
+            $port = $repository->get("zan_session.port");
+            $client = new HttpClient($host, $port);
+            $client->setHeader([
+                "Content-Type" => "application/json"
+            ]);
+            $params = json_encode([
+                'data' => $this->session_changed_map,
+                'sessionId' => $this->session_id
+            ]);
+            try {
+                yield $client->post("/session/session/setMultiUpdateObj", $params, 1000);
+            } catch (\Throwable $t) {
+                echo_exception($t);
+            } catch (\Exception $e) {
+                echo_exception($e);
             }
         }
     }
