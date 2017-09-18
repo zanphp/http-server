@@ -73,16 +73,15 @@ class RequestHandler
             $coroutine = $requestTask->run();
             $this->task = new Task($coroutine, $this->context);
             $this->task->run();
+            clear_ob();
             return;
         } catch (\Throwable $t) {
             $e = t2ex($t);
         } catch (\Exception $e) {
 
-        } finally {
-            while (ob_get_level() > 0) {
-                ob_end_flush();
-            }
         }
+
+        clear_ob();
 
         $repository = make(Repository::class);
         $debug = $repository->get("debug");

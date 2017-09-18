@@ -46,11 +46,8 @@ class RequestTask
         } catch (\Throwable $t) {
             $e = t2ex($t);
         } catch (\Exception $e) {
-        } finally {
-            while (ob_get_level() > 0) {
-                ob_end_flush();
-            }
         }
+        clear_ob();
 
         $repository = make(Repository::class);
         if ($repository->get("debug")) {
@@ -86,5 +83,6 @@ class RequestTask
         yield $response->sendBy($this->swooleResponse);
 
         $this->context->getEvent()->fire($this->context->get('request_end_event_name'));
+        clear_ob();
     }
 }
