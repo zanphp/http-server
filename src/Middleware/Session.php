@@ -71,7 +71,7 @@ class Session
                     $client->setHeader([
                         "Content-Type" => "application/json"
                     ]);
-                    $response = (yield $client->post("/session/session/create", null, 300));
+                    $response = (yield $client->post("/session/session/create", null, 200));
                     $response = json_decode($response->getBody(), true);
                     if (isset($response['data']['code']) && $response['data']['code'] === 200 &&
                         isset($response['data']['data']['sessionId'])) {
@@ -153,13 +153,18 @@ class Session
                 'data' => $this->session_changed_map,
                 'sessionId' => $this->session_id
             ]);
-            try {
-                yield $client->post("/session/session/setMultiUpdateObj", $params, 1000);
-            } catch (\Throwable $t) {
-                echo_exception($t);
-            } catch (\Exception $e) {
-                echo_exception($e);
+            $retries = 3;
+            for ($i = 0; $i < $retries; $i++) {
+                try {
+                    yield $client->post("/session/session/setMultiUpdateObj", $params, 200);
+                    return;
+                } catch (\Throwable $t) {
+                    echo_exception($t);
+                } catch (\Exception $e) {
+                    echo_exception($e);
+                }
             }
+
         }
     }
 
