@@ -20,16 +20,20 @@ class Dispatcher
             $args = [];
         }
 
-        $controller = $this->getControllerClass($controllerName);
-        if(!class_exists($controller)) {
-            throw new PageNotFoundException("controller:{$controller} not found");
-        }
+        if ($controllerName === "/" && is_callable($action)) {
+            yield $action(...array_values($args));
+        } else {
+            $controller = $this->getControllerClass($controllerName);
+            if(!class_exists($controller)) {
+                throw new PageNotFoundException("controller:{$controller} not found");
+            }
 
-        $controller = new $controller($request, $context);
-        if(!is_callable([$controller, $action])) {
-            throw new PageNotFoundException("action:{$action} is not callable in controller:" . get_class($controller));
+            $controller = new $controller($request, $context);
+            if(!is_callable([$controller, $action])) {
+                throw new PageNotFoundException("action:{$action} is not callable in controller:" . get_class($controller));
+            }
+            yield $controller->$action(...array_values($args));
         }
-        yield $controller->$action(...array_values($args));
     }
 
     private function getControllerClass($controllerName)
