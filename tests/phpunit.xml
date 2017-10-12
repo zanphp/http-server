@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit backupGlobals="false"
+         backupStaticAttributes="false"
+         bootstrap="autoload_test.php"
+         colors="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         stopOnError="true"
+         stopOnFailure="true"
+         stopOnIncomplete="true"
+         stopOnSkipped="true"
+         beStrictAboutTestsThatDoNotTestAnything="false"
+         >
+    <testsuites>
+        <testsuite name="Zan Test Suite">
+            <file>HttpServerTest.php</file>
+            <file>MiddlewareConfigTest.php</file>
+            <file>MiddlewareCustomTest.php</file>
+            <file>MiddlewareSessionTest.php</file>
+        </testsuite>
+    </testsuites>
+</phpunit>
