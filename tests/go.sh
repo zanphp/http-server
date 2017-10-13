@@ -6,7 +6,7 @@ case "$1" in
             ln -s ../vendor/ $path
         fi
         echo "start http server"
-        php HttpServer.php >/dev/null 2>&1 &
+        php mockServer/HttpServer.php >/dev/null 2>&1 &
         #php HttpServer.php  &
     ;;
     stop)

@@ -1,16 +1,13 @@
 <?php
-require __DIR__ . '/autoload_test.php';
+require __DIR__ . '/../autoload_test.php';
 use Zan\Framework\Foundation\Application;
 use swoole_http_server as SwooleHttpServer;
-//use swoole_server as SwooleTcpServer;
-//use swoole_websocket_server as SwooleWebSocketServer;
 use ZanPHP\Contracts\Config\Repository;
 use ZanPHP\HttpServer\Server;
 use ZanPHP\Support\Di;
 
 $appName = 'http-server-test';
-$rootPath = realpath(__DIR__);
-
+$rootPath = realpath(__DIR__.'/../');
 $app = new Application($appName, $rootPath);
 $repository = make(Repository::class);
 $config = $repository->get('server');
