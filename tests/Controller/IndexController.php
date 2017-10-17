@@ -34,7 +34,7 @@ class IndexController extends Controller {
     public function sessionFilter()
     {
         $session = $this->context->get('session');
-        $value = yield $session->get('skey');
+        $value = (yield $session->get('skey'));
         if(is_null($value)){
             yield $session->set('skey','zan_session');
             $out = array('exist'=>false);
