@@ -4,11 +4,9 @@ namespace ZanPHP\HttpServer\Middleware;
 
 use InvalidArgumentException;
 use ZanPHP\Contracts\Config\Repository;
-use ZanPHP\Contracts\Session\Storable;
 use ZanPHP\Exception\ZanException;
 use ZanPHP\HttpClient\HttpClient;
 use ZanPHP\HttpFoundation\Request\Request;
-use ZanPHP\HttpServer\Middleware\Impl\SessionCacheStore;
 use ZanPHP\NoSql\Facade\Cache;
 use ZanPHP\Utilities\Encrpt\Uuid;
 
@@ -21,10 +19,9 @@ class Session
     private $cookie;
     private $session_id;
     private $session_map = array();
+    private $session_changed_map = array();
     private $config;
     private $isChanged = false;
-    /** @var Storable */
-    private $sessionStore;
 
     public function __construct(Request $request, $cookie)
     {
@@ -33,12 +30,7 @@ class Session
 
         $this->request = $request;
         $this->cookie = $cookie;
-        $repository = make(Repository::class);
-        $clazz = $repository->get("zan_session.store_class");
-        if ($clazz === null) {
-            $clazz = SessionCacheStore::class;
-        }
-        $this->sessionStore = new $clazz();
+
     }
 
     public function init()
@@ -52,20 +44,67 @@ class Session
         if (isset($session_id) && !empty($session_id)) {
             $this->session_id = $session_id;
         } else {
-            $this->session_id = (yield $this->sessionStore->generateId());
+            $this->session_id = (yield $this->getUuid());
             $this->cookie->set(self::YZ_SESSION_KEY, $this->session_id);
             yield true;
             return;
         }
 
-        $this->session_map = (yield $this->sessionStore->get($this->session_id));
+        $session = (yield Cache::get($this->config['store_key'], [$this->session_id]));
+        if ($session) {
+            $this->session_map = $this->sessionDecode($session);
+        }
         yield true;
+    }
+
+    private function getUuid()
+    {
+        $repository = make(Repository::class);
+        $enableHttp = $repository->get("zan_session.enable_http");
+        if ($enableHttp === true) {
+            $host = $repository->get("zan_session.host");
+            $port = $repository->get("zan_session.port");
+            $retries = 3;
+            for ($i = 0; $i < $retries; $i++) {
+                try {
+                    $client = new HttpClient($host, $port);
+                    $client->setHeader([
+                        "Content-Type" => "application/json"
+                    ]);
+                    $response = (yield $client->post("/session/session/create", null, 200));
+                    $response = json_decode($response->getBody(), true);
+                    if (isset($response['data']['code']) && $response['data']['code'] === 200 &&
+                        isset($response['data']['data']['sessionId'])) {
+                        $uuid = $response['data']['data']['sessionId'];
+                        break;
+                    }
+                } catch (\Throwable $t) {
+                    echo_exception($t);
+                    if ($i == $retries - 1) {
+                        throw $t;
+                    }
+                } catch (\Exception $e) {
+                    echo_exception($e);
+                    if ($i == $retries - 1) {
+                        throw $e;
+                    }
+                }
+            }
+        } else {
+            $uuid = Uuid::get();
+        }
+
+        if (!isset($uuid)) {
+            throw new ZanException("session get uuid failed");
+        }
+        yield $uuid;
     }
 
     public function set($key, $value)
     {
         $this->session_map[$key] = $value;
         $this->isChanged = true;
+        $this->session_changed_map[] = ['key' => $key, 'value' => $value, 'opt' => 1];
         yield true;
     }
 
@@ -78,12 +117,13 @@ class Session
     {
         unset($this->session_map[$key]);
         $this->isChanged = true;
+        $this->session_changed_map[] = ['key' => $key, 'opt' => 0];
         yield true;
     }
 
     public function destroy()
     {
-        $ret = (yield $this->sessionStore->del($this->session_id));
+        $ret = (yield Cache::del($this->config['store_key'], [$this->session_id]));
         if (!$ret) {
             yield false;
             return;
@@ -98,12 +138,62 @@ class Session
         yield $this->session_id;
     }
 
+    private function writeHttpInterface()
+    {
+        $repository = make(Repository::class);
+        $enableHttp = $repository->get("zan_session.enable_http");
+        if ($enableHttp === true) {
+            $host = $repository->get("zan_session.host");
+            $port = $repository->get("zan_session.port");
+            $client = new HttpClient($host, $port);
+            $client->setHeader([
+                "Content-Type" => "application/json"
+            ]);
+            $params = json_encode([
+                'data' => $this->session_changed_map,
+                'sessionId' => $this->session_id
+            ]);
+            $retries = 3;
+            for ($i = 0; $i < $retries; $i++) {
+                try {
+                    yield $client->post("/session/session/setMultiUpdateObj", $params, 200);
+                    return;
+                } catch (\Throwable $t) {
+                    echo_exception($t);
+                } catch (\Exception $e) {
+                    echo_exception($e);
+                }
+            }
+
+        }
+    }
+
     public function writeBack() {
         if ($this->isChanged) {
-            yield $this->sessionStore->set($this->session_id, $this->session_map);
+            yield $this->writeHttpInterface();
             yield Cache::set($this->config['store_key'], [$this->session_id], $this->sessionEncode($this->session_map));
         }
     }
+
+
+    private static function sessionDecode($session) {
+        $sessionTable = array();
+        $offset = 0;
+        while ($offset < strlen($session)) {
+            if (!strstr(substr($session, $offset), "|")) {
+                throw new InvalidArgumentException("Invalid data, remaining: " . substr($session, $offset));
+            }
+            $pos = strpos($session, "|", $offset);
+            $num = $pos - $offset;
+            $varname = substr($session, $offset, $num);
+            $offset += $num + 1;
+            $data = unserialize(substr($session, $offset));
+            $sessionTable[$varname] = $data;
+            $offset += strlen(serialize($data));
+        }
+        return $sessionTable;
+    }
+
 
     public static function sessionEncode( array $data ) {
         $ret = '';
