@@ -101,7 +101,6 @@ class Session
     public function writeBack() {
         if ($this->isChanged) {
             yield $this->sessionStore->set($this->session_id, $this->session_map);
-            yield Cache::set($this->config['store_key'], [$this->session_id], $this->sessionEncode($this->session_map));
         }
     }
 
