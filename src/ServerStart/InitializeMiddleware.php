@@ -9,11 +9,11 @@ use ZanPHP\ServerBase\Middleware\MiddlewareInitiator;
 class InitializeMiddleware
 {
     private $zanFilters = [
-        \Zan\Framework\Network\Http\Middleware\SessionFilter::class,
+        \ZanPHP\HttpServer\Middleware\SessionFilter::class,
     ];
 
     private $zanTerminators = [
-        \Zan\Framework\Network\Http\Middleware\SessionTerminator::class,
+        \ZanPHP\HttpServer\Middleware\SessionTerminator::class,
     ];
 
     /**
