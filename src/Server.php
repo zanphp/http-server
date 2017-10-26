@@ -109,13 +109,50 @@ class Server extends ServerBase
 
     public function onRequest(SwooleHttpRequest $httpRequest, SwooleHttpResponse $httpResponse)
     {
-        if (method_exists($this->swooleServer, "stats")) {
-            if ($httpRequest->server["request_uri"] === "/eW91emFuCg==/stats") {
-                $httpResponse->write(json_encode($this->swooleServer->stats()));
-                return;
-            }
+        if ($this->__HB__($httpRequest, $httpResponse)) {
+            return;
         }
 
         (new RequestHandler())->handle($httpRequest, $httpResponse);
+    }
+
+    private function __HB__(SwooleHttpRequest $httpRequest, SwooleHttpResponse $httpResponse)
+    {
+        if ($httpRequest->server["request_uri"] === "/_HB_.php") {
+            $action = isset($httpRequest->get["service"]) ? $httpRequest->get["service"] : null;
+            switch ($action) {
+                case "online":
+                    apcu_store("_HB_", true);
+                    $httpResponse->status(200);
+                    $httpResponse->end("online");
+                    break;
+
+                case "offline":
+                    apcu_delete("_HB_");
+                    $httpResponse->status(200);
+                    $httpResponse->end("offline");
+                    break;
+
+                default:
+                    if (apcu_exists("_HB_")) {
+                        $httpResponse->status(200);
+                        $httpResponse->end("online");
+                    } else {
+                        $httpResponse->status(404);
+                        $httpResponse->end("offline");
+                    }
+                    break;
+            }
+            return true;
+        }
+
+        if (method_exists($this->swooleServer, "stats")) {
+            if ($httpRequest->server["request_uri"] === "/eW91emFuCg==/stats") {
+                $httpResponse->write(json_encode($this->swooleServer->stats()));
+                return true;
+            }
+        }
+
+        return false;
     }
 }
