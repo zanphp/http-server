@@ -14,7 +14,9 @@
     "zanphp/database": "dev-master",
     "zanphp/service-store": "dev-master",
     "zanphp/framework": "dev-master",
-    "zanphp/worker-monitor": "dev-master",
+    "zanphp/worker-monitor": "dev-master"
+  },
+  "require-dev": {
     "zanphp/config": "dev-master",
     "zanphp/testing": "dev-master"
   },
