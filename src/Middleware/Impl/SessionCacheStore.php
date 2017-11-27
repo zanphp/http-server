@@ -30,6 +30,7 @@ class SessionCacheStore implements Storable
         $session = (yield Cache::get($this->sessionTpl, [$key]));
         if ($session) {
            yield $this->sessionDecode($session);
+           return;
         }
         yield [];
     }
